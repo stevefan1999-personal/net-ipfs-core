@@ -122,14 +122,14 @@ public class MerkleNode : IMerkleNode<IMerkleLink>, IEquatable<MerkleNode>
 
     /// <inheritdoc />
     [DataMember]
-    public IEnumerable<IMerkleLink> Links => _links ??= IpfsClient.Object.LinksAsync(Id).Result;
+    public IEnumerable<IMerkleLink> Links => _links ??= IpfsClient.Object.LinksAsync(Id).GetAwaiter().GetResult();
 
     /// <inheritdoc />
     [DataMember]
-    public byte[] DataBytes => IpfsClient.Block.GetAsync(Id).Result.DataBytes;
+    public byte[] DataBytes => IpfsClient.Block.GetAsync(Id).GetAwaiter().GetResult().DataBytes;
 
     /// <inheritdoc />
-    public Stream DataStream => IpfsClient.Block.GetAsync(Id).Result.DataStream;
+    public Stream DataStream => IpfsClient.Block.GetAsync(Id).GetAwaiter().GetResult().DataStream;
 
     /// <inheritdoc />
     public IMerkleLink ToLink(string name = null)
@@ -146,9 +146,11 @@ public class MerkleNode : IMerkleNode<IMerkleLink>, IEquatable<MerkleNode>
     private void GetBlockStats()
     {
         if (_hasBlockStats)
+        {
             return;
+        }
 
-        var stats = IpfsClient.Block.StatAsync(Id).Result;
+        var stats = IpfsClient.Block.StatAsync(Id).GetAwaiter().GetResult();
         _blockSize = stats.Size;
 
         _hasBlockStats = true;

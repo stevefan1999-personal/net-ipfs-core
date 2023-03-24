@@ -13,10 +13,7 @@ namespace IpfsShipyard.Ipfs.Engine.CoreApi;
 internal class SwarmApi : ISwarmApi
 {
     private static readonly ILog Log = LogManager.GetLogger(typeof(SwarmApi));
-
-    private static readonly MultiAddress[] DefaultFilters =
-    {
-    };
+    private static readonly MultiAddress[] DefaultFilters = Array.Empty<MultiAddress>();
 
     private readonly IpfsEngine _ipfs;
 

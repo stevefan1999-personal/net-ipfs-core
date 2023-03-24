@@ -90,7 +90,7 @@ public class VarintTest
     public void WriteAsync_Negative()
     {
         var ms = new MemoryStream();
-        ExceptionAssert.Throws<Exception>(() => ms.WriteVarintAsync(-1).Wait());
+        ExceptionAssert.Throws<Exception>(() => ms.WriteVarintAsync(-1).GetAwaiter().GetResult());
     }
 
     [TestMethod]
@@ -99,7 +99,7 @@ public class VarintTest
         var ms = new MemoryStream();
         var cs = new CancellationTokenSource();
         cs.Cancel();
-        ExceptionAssert.Throws<TaskCanceledException>(() => ms.WriteVarintAsync(0, cs.Token).Wait(cs.Token));
+        ExceptionAssert.Throws<TaskCanceledException>(() => ms.WriteVarintAsync(0, cs.Token).GetAwaiter().GetResult());
     }
 
     [TestMethod]
@@ -116,7 +116,7 @@ public class VarintTest
         var ms = new MemoryStream(new byte[] { 0 });
         var cs = new CancellationTokenSource();
         cs.Cancel();
-        ExceptionAssert.Throws<TaskCanceledException>(() => ms.ReadVarint32Async(cs.Token).Wait(cs.Token));
+        ExceptionAssert.Throws<TaskCanceledException>(() => ms.ReadVarint32Async(cs.Token).GetAwaiter().GetResult());
     }
 
     [TestMethod]

@@ -65,7 +65,7 @@ public class PinApiTest
         ExceptionAssert.Throws<Exception>(() =>
         {
             var cts = new CancellationTokenSource(250);
-            var _ = ipfs.Pin.AddAsync(dag.Id, true, cts.Token).Result;
+            var _ = ipfs.Pin.AddAsync(dag.Id, true, cts.Token).GetAwaiter().GetResult();
         });
     }
 

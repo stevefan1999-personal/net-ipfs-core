@@ -47,7 +47,7 @@ internal class DagApi : IDagApi
             path = path.Remove(0, 6);
         }
 
-        var parts = path.Split('/').Where(p => p.Length > 0).ToArray();
+        var parts = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0)
         {
             throw new ArgumentException($"Cannot resolve '{path}'.");
@@ -56,8 +56,10 @@ internal class DagApi : IDagApi
         JToken token = await GetAsync(Cid.Decode(parts[0]), cancel).ConfigureAwait(false);
         foreach (var child in parts.Skip(1))
         {
-            token = ((JObject)token)[child];
-            if (token == null)
+            // Use a case-insensitive comparison: We configure CBOR setting to turn off camel
+            // casing which has the effect of capitalizing the first letter of serialized property names
+            // as a form of canonicalization.
+            if (!((JObject)token).TryGetValue(child, StringComparison.OrdinalIgnoreCase, out token) || token == null)
             {
                 throw new($"Missing component '{child}'.");
             }
@@ -121,7 +123,8 @@ internal class DagApi : IDagApi
         CancellationToken cancel = default)
     {
         var format = GetDataFormat(contentType);
-        var block = format.Serialize(CBORObject.FromObject(data, PodOptions));
+        var cborObj = CBORObject.FromObject(data, PodOptions);
+        var block = format.Serialize(cborObj);
         return await _ipfs.Block.PutAsync(block, contentType, multiHash, encoding, pin, cancel).ConfigureAwait(false);
     }
 

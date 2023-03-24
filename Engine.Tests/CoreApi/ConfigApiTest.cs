@@ -37,15 +37,15 @@ public class ConfigApiTest
     }
 
     [TestMethod]
-    public void Keys_are_Case_Sensitive()
+    public async Task Keys_are_Case_Sensitive()
     {
         var ipfs = TestFixture.Ipfs;
-        var api = ipfs.Config.GetAsync("Addresses.API").Result;
+        var api = await ipfs.Config.GetAsync("Addresses.API");
         StringAssert.StartsWith(api.Value<string>(), ApiAddress);
 
         ExceptionAssert.Throws<Exception>(() =>
         {
-            var x = ipfs.Config.GetAsync("Addresses.api").Result;
+            var x = ipfs.Config.GetAsync("Addresses.api").GetAwaiter().GetResult();
         });
     }
 
@@ -66,6 +66,6 @@ public class ConfigApiTest
         var value = JToken.Parse("['http://example.io']");
         var ipfs = TestFixture.Ipfs;
         await ipfs.Config.SetAsync(key, value);
-        Assert.AreEqual("http://example.io", ipfs.Config.GetAsync(key).Result[0]);
+        Assert.AreEqual("http://example.io", (await ipfs.Config.GetAsync(key))[0]);
     }
 }

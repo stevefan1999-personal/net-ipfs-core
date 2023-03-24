@@ -38,7 +38,7 @@ public class TrustedPeerCollection : ICollection<MultiAddress>
         if (peer == null)
             throw new ArgumentNullException();
 
-        _ipfs.DoCommandAsync("bootstrap/add", default, peer.ToString()).Wait();
+        _ipfs.DoCommandAsync("bootstrap/add", default, peer.ToString()).GetAwaiter().GetResult();
         _peers = null;
     }
 
@@ -50,7 +50,7 @@ public class TrustedPeerCollection : ICollection<MultiAddress>
     /// </remarks>
     public void AddDefaultNodes()
     {
-        _ipfs.DoCommandAsync("bootstrap/add", default, null, "default=true").Wait();
+        _ipfs.DoCommandAsync("bootstrap/add", default, null, "default=true").GetAwaiter().GetResult();
         _peers = null;
     }
 
@@ -62,7 +62,7 @@ public class TrustedPeerCollection : ICollection<MultiAddress>
     /// </remarks>
     public void Clear()
     {
-        _ipfs.DoCommandAsync("bootstrap/rm", default, null, "all=true").Wait();
+        _ipfs.DoCommandAsync("bootstrap/rm", default, null, "all=true").GetAwaiter().GetResult();
         _peers = null;
     }
 
@@ -126,6 +126,6 @@ public class TrustedPeerCollection : ICollection<MultiAddress>
 
     private void Fetch()
     {
-        _peers = _ipfs.DoCommandAsync<BootstrapListResponse>("bootstrap/list", default).Result.Peers;
+        _peers = _ipfs.DoCommandAsync<BootstrapListResponse>("bootstrap/list", default).GetAwaiter().GetResult().Peers;
     }
 }

@@ -12,58 +12,58 @@ public class ConfigApiTest
     private const string GatewayAddress = "/ip4/127.0.0.1/tcp/";
 
     [TestMethod]
-    public void Get_Entire_Config()
+    public async Task Get_Entire_Config()
     {
         var ipfs = TestFixture.Ipfs;
-        var config = ipfs.Config.GetAsync().Result;
+        var config = await ipfs.Config.GetAsync();
         StringAssert.StartsWith(config["Addresses"]["API"].Value<string>(), ApiAddress);
     }
 
     [TestMethod]
-    public void Get_Scalar_Key_Value()
+    public async Task Get_Scalar_Key_Value()
     {
         var ipfs = TestFixture.Ipfs;
-        var api = ipfs.Config.GetAsync("Addresses.API").Result;
+        var api = await ipfs.Config.GetAsync("Addresses.API");
         StringAssert.StartsWith(api.Value<string>(), ApiAddress);
     }
 
     [TestMethod]
-    public void Get_Object_Key_Value()
+    public async Task Get_Object_Key_Value()
     {
         var ipfs = TestFixture.Ipfs;
-        var addresses = ipfs.Config.GetAsync("Addresses").Result;
+        var addresses = await ipfs.Config.GetAsync("Addresses");
         StringAssert.StartsWith(addresses["API"].Value<string>(), ApiAddress);
         StringAssert.StartsWith(addresses["Gateway"].Value<string>(), GatewayAddress);
     }
 
     [TestMethod]
-    public void Keys_are_Case_Sensitive()
+    public async Task Keys_are_Case_Sensitive()
     {
         var ipfs = TestFixture.Ipfs;
-        var api = ipfs.Config.GetAsync("Addresses.API").Result;
+        var api = await ipfs.Config.GetAsync("Addresses.API");
         StringAssert.StartsWith(api.Value<string>(), ApiAddress);
 
-        ExceptionAssert.Throws<Exception>(() => { var x = ipfs.Config.GetAsync("Addresses.api").Result; });
+        ExceptionAssert.Throws<Exception>(() => { var x = ipfs.Config.GetAsync("Addresses.api").GetAwaiter().GetResult(); });
     }
 
     [TestMethod]
-    public void Set_String_Value()
+    public async Task Set_String_Value()
     {
         const string key = "foo";
         const string value = "foobar";
         var ipfs = TestFixture.Ipfs;
-        ipfs.Config.SetAsync(key, value).Wait();
-        Assert.AreEqual(value, ipfs.Config.GetAsync(key).Result);
+        await ipfs.Config.SetAsync(key, value);
+        Assert.AreEqual(value, await ipfs.Config.GetAsync(key));
     }
 
     [TestMethod]
-    public void Set_JSON_Value()
+    public async Task Set_JSON_Value()
     {
         const string key = "API.HTTPHeaders.Access-Control-Allow-Origin";
         var value = JToken.Parse("['http://example.io']");
         var ipfs = TestFixture.Ipfs;
-        ipfs.Config.SetAsync(key, value).Wait();
-        Assert.AreEqual("http://example.io", ipfs.Config.GetAsync(key).Result[0]);
+        await ipfs.Config.SetAsync(key, value);
+        Assert.AreEqual("http://example.io", (await ipfs.Config.GetAsync(key))[0]);
     }
 
     [TestMethod]

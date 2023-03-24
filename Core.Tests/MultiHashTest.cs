@@ -356,13 +356,13 @@ public class MultiHashTest
         {
             Algorithm = "shake-128",
             Input = "beep boop",
-            Output = "18105fe422311f770743c2e0d86bcca09211"
+            Output = "18205fe422311f770743c2e0d86bcca092111cbce85487212829739c3c3723776e5a"
         },
         new()
         {
             Algorithm = "shake-256",
             Input = "beep boop",
-            Output = "192059feb5565e4f924baef74708649fed376d63948a862322ed763ecf093b63b38b"
+            Output = "194059feb5565e4f924baef74708649fed376d63948a862322ed763ecf093b63b38b0955908c099c63dda73ee469c31b1456cec95e325bd868d0ce0c0135f5a54411"
         },
         new()
         {

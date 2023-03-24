@@ -22,7 +22,7 @@ public class MigrationManagerTest
         var migrator = new MigrationManager(TestFixture.Ipfs);
         ExceptionAssert.Throws<ArgumentOutOfRangeException>(() =>
         {
-            migrator.MigrateToVersionAsync(int.MaxValue).Wait();
+            migrator.MigrateToVersionAsync(int.MaxValue).GetAwaiter().GetResult();
         });
     }
 

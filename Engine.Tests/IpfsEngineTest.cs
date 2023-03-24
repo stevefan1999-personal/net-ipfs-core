@@ -79,7 +79,7 @@ public class IpfsEngineTest
         };
         ExceptionAssert.Throws<UnauthorizedAccessException>(() =>
         {
-            var _ = ipfs2.KeyChainAsync().Result;
+            var _ = ipfs2.KeyChainAsync().GetAwaiter().GetResult();
         });
     }
 
@@ -111,7 +111,7 @@ public class IpfsEngineTest
 
         await ipfs.StartAsync();
         Assert.AreNotEqual(0, peer.Addresses.Count());
-        ExceptionAssert.Throws<Exception>(() => ipfs.StartAsync().Wait());
+        ExceptionAssert.Throws<Exception>(() => ipfs.StartAsync().GetAwaiter().GetResult());
         await ipfs.StopAsync();
         Assert.AreEqual(0, peer.Addresses.Count());
     }

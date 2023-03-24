@@ -8,10 +8,10 @@ namespace IpfsShipyard.Ipfs.Http.Tests.CoreApi;
 public class PinApiTest
 {
     [TestMethod]
-    public void List()
+    public async Task List()
     {
         var ipfs = TestFixture.Ipfs;
-        var pins = ipfs.Pin.ListAsync().Result;
+        var pins = await ipfs.Pin.ListAsync();
         Assert.IsNotNull(pins);
         Assert.IsTrue(pins.Any());
     }

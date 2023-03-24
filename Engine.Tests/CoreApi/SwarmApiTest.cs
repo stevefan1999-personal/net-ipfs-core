@@ -13,7 +13,6 @@ namespace IpfsShipyard.Ipfs.Engine.Tests.CoreApi;
 [TestClass]
 public class SwarmApiTest
 {
-    private static int _nodeNumber;
     private readonly IpfsEngine _ipfs = TestFixture.Ipfs;
     private readonly MultiAddress _somewhere = "/ip4/127.0.0.1";
 
@@ -103,7 +102,7 @@ public class SwarmApiTest
     [TestMethod]
     public async Task PrivateNetwork_WithOptionsKey()
     {
-        using var ipfs = CreateNode();
+        using var ipfs = await CreateNodeAsync();
         try
         {
             ipfs.Options.Swarm.PrivateNetworkKey = new PreSharedKey().Generate();
@@ -122,13 +121,15 @@ public class SwarmApiTest
     [TestMethod]
     public async Task PrivateNetwork_WithSwarmKeyFile()
     {
-        using var ipfs = CreateNode();
+        using var ipfs = await CreateNodeAsync();
         try
         {
             var key = new PreSharedKey().Generate();
             var path = Path.Combine(ipfs.Options.Repository.ExistingFolder(), "swarm.key");
-            await using var x = File.CreateText(path);
-            key.Export(x);
+            await using (var keyStream = File.CreateText(path))
+            {
+                key.Export(keyStream);
+            }
 
             var swarm = await ipfs.SwarmService;
             Assert.IsNotNull(swarm.NetworkProtector);
@@ -142,16 +143,16 @@ public class SwarmApiTest
         }
     }
 
-    private static IpfsEngine CreateNode()
+    private static async Task<IpfsEngine> CreateNodeAsync()
     {
         const string passphrase = "this is not a secure pass phrase";
         var ipfs = new IpfsEngine(passphrase);
-        ipfs.Options.Repository.Folder = Path.Combine(Path.GetTempPath(), $"swarm-{_nodeNumber++}");
+        ipfs.Options.Repository.Folder = Path.Combine(Path.GetTempPath(), $"swarm-{Guid.NewGuid().ToString().Substring(0, 12)}");
         ipfs.Options.KeyChain.DefaultKeySize = 512;
-        ipfs.Config.SetAsync(
+        await ipfs.Config.SetAsync(
             "Addresses.Swarm",
             JToken.FromObject(new[] { "/ip4/0.0.0.0/tcp/4007" })
-        ).Wait();
+        );
 
         return ipfs;
     }

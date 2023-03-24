@@ -20,7 +20,7 @@ internal class FileSystemApi : IFileSystemApi
     internal FileSystemApi(IpfsClient ipfs)
     {
         _ipfs = ipfs;
-        _emptyFolder = new(() => ipfs.Object.NewDirectoryAsync().Result);
+        _emptyFolder = new(() => ipfs.Object.NewDirectoryAsync().GetAwaiter().GetResult());
     }
 
     public async Task<IFileSystemNode> AddFileAsync(string path, AddFileOptions options = null, CancellationToken cancel = default)

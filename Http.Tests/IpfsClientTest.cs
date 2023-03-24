@@ -25,7 +25,7 @@ public partial class IpfsClientTest
     {
         var target = TestFixture.Ipfs;
         object unknown;
-        ExceptionAssert.Throws<HttpRequestException>(() => unknown = target.DoCommandAsync("foobar", default).Result);
+        ExceptionAssert.Throws<HttpRequestException>(() => unknown = target.DoCommandAsync("foobar", default).GetAwaiter().GetResult());
     }
 
     [TestMethod]
@@ -33,6 +33,6 @@ public partial class IpfsClientTest
     {
         var target = TestFixture.Ipfs;
         object unknown;
-        ExceptionAssert.Throws<HttpRequestException>(() => unknown = target.DoCommandAsync("key/gen", default).Result);
+        ExceptionAssert.Throws<HttpRequestException>(async () => unknown = await target.DoCommandAsync("key/gen", default));
     }
 }

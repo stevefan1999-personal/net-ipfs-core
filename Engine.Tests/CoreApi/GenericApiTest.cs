@@ -92,7 +92,7 @@ public class GenericApiTest
         var ipfs = TestFixture.Ipfs;
         ExceptionAssert.Throws<FormatException>(() =>
         {
-            var _ = ipfs.Generic.ResolveAsync("QmHash").Result;
+            var _ = ipfs.Generic.ResolveAsync("QmHash").GetAwaiter().GetResult();
         });
     }
 

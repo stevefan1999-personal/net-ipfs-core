@@ -64,8 +64,7 @@ public class MultiAddressExtensionsTest
         {
             var _ = new MultiAddress("/dns/does.not.exist/tcp/5001")
                 .ResolveAsync()
-                .Result;
+                .GetAwaiter().GetResult();
         });
     }
-
 }

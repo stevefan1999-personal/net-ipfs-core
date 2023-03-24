@@ -53,7 +53,7 @@ public class KeyApiTest
         var ipfs = TestFixture.Ipfs;
         ExceptionAssert.Throws<Exception>(() =>
         {
-            var x = ipfs.Key.ExportAsync("unknow", password).Result;
+            var x = ipfs.Key.ExportAsync("unknow", password).GetAwaiter().GetResult();
         });
     }
 
@@ -67,7 +67,7 @@ public class KeyApiTest
         var wrong = "wrong password".ToCharArray();
         ExceptionAssert.Throws<UnauthorizedAccessException>(() =>
         {
-            var x = ipfs.Key.ImportAsync("clone", pem, wrong).Result;
+            var x = ipfs.Key.ImportAsync("clone", pem, wrong).GetAwaiter().GetResult();
         });
     }
 
@@ -128,7 +128,7 @@ Rw==
         var ipfs = TestFixture.Ipfs;
         ExceptionAssert.Throws<InvalidDataException>(() =>
         {
-            var x = ipfs.Key.ImportAsync("bad", pem, password).Result;
+            var x = ipfs.Key.ImportAsync("bad", pem, password).GetAwaiter().GetResult();
         });
     }
 
@@ -143,7 +143,7 @@ MIIFDTA/BgkqhkiG9w0BBQ0wMjAaBgkqhkiG9w0BBQwwDQQILdGJynKmkrMCAWQw
         var ipfs = TestFixture.Ipfs;
         ExceptionAssert.Throws<Exception>(() =>
         {
-            var x = ipfs.Key.ImportAsync("bad", pem, password).Result;
+            var x = ipfs.Key.ImportAsync("bad", pem, password).GetAwaiter().GetResult();
         });
     }
 
@@ -297,7 +297,7 @@ IyIjAQyiOZZ5e8ozKAp5QFjQ/StM1uInn0v7Oi3vQRfbOOXcLXJL
 
         ExceptionAssert.Throws<Exception>(() =>
         {
-            var _ = ipfs.Key.CreateAsync("unknown", "unknown", 0).Result;
+            var _ = ipfs.Key.CreateAsync("unknown", "unknown", 0).GetAwaiter().GetResult();
         });
     }
 

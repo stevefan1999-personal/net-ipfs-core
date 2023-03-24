@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace IpfsShipyard.Ipfs.Http.Tests;
@@ -42,5 +43,10 @@ public static class ExceptionAssert
     public static Exception Throws(Action action, string expectedMessage = null)
     {
         return Throws<Exception>(action, expectedMessage);
+    }
+
+    public static T Throws<T>(Task asyncAction, string expectedMessage = null) where T : Exception
+    {
+        return Throws<T>(() => asyncAction.GetAwaiter().GetResult(), expectedMessage);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using IpfsShipyard.Ipfs.Core;
 using IpfsShipyard.Ipfs.Engine.BlockExchange;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -90,7 +91,7 @@ public class BitswapTest
     }
 
     [TestMethod]
-    public void Found()
+    public async Task Found()
     {
         var bitswap = new Bitswap { Swarm = new() { LocalPeer = _self } };
         Assert.AreEqual(0, bitswap.PeerWants(_self.Id).Count());
@@ -109,7 +110,7 @@ public class BitswapTest
         bitswap.Found(a);
         Assert.IsTrue(task.IsCompleted);
         CollectionAssert.DoesNotContain(bitswap.PeerWants(_self.Id).ToArray(), a.Id);
-        CollectionAssert.AreEqual(a.DataBytes, task.Result.DataBytes);
+        CollectionAssert.AreEqual(a.DataBytes, (await task).DataBytes);
     }
 
     [TestMethod]

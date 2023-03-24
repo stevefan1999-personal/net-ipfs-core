@@ -43,9 +43,9 @@ public class SwarmTest
     public void Start_NoLocalPeer()
     {
         var swarm = new Swarm();
-        ExceptionAssert.Throws<NotSupportedException>(() =>
+        ExceptionAssert.Throws<NotSupportedException>(async () =>
         {
-            swarm.StartAsync().Wait();
+            await swarm.StartAsync();
         });
     }
 
@@ -493,47 +493,47 @@ public class SwarmTest
     }
 
     [TestMethod]
-    public void Connect_No_Transport()
+    public async Task Connect_No_Transport()
     {
         var remoteId = "QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb";
         MultiAddress remoteAddress = $"/ip4/127.0.0.1/ipfs/{remoteId}";
         var swarm = new Swarm { LocalPeer = _self };
-        swarm.StartAsync().Wait();
+        await swarm.StartAsync();
         try
         {
-            ExceptionAssert.Throws<Exception>(() =>
+            ExceptionAssert.Throws<Exception>(async () =>
             {
-                var _ = swarm.ConnectAsync(remoteAddress).Result;
+                var _ = await swarm.ConnectAsync(remoteAddress);
             });
         }
         finally
         {
-            swarm.StopAsync().Wait();
+            await swarm.StopAsync();
         }
     }
 
     [TestMethod]
-    public void Connect_Refused()
+    public async Task Connect_Refused()
     {
         var remoteId = "QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb";
         MultiAddress remoteAddress = $"/ip4/127.0.0.1/tcp/4040/ipfs/{remoteId}";
         var swarm = new Swarm { LocalPeer = _self };
-        swarm.StartAsync().Wait();
+        await swarm.StartAsync();
         try
         {
-            ExceptionAssert.Throws<Exception>(() =>
+            ExceptionAssert.Throws<Exception>(async () =>
             {
-                var _ = swarm.ConnectAsync(remoteAddress).Result;
+                var _ = await swarm.ConnectAsync(remoteAddress);
             });
         }
         finally
         {
-            swarm.StopAsync().Wait();
+            await swarm.StopAsync();
         }
     }
 
     [TestMethod]
-    public void Connect_Failure_Event()
+    public async Task Connect_Failure_Event()
     {
         var remoteId = "QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb";
         MultiAddress remoteAddress = $"/ip4/127.0.0.1/tcp/4040/ipfs/{remoteId}";
@@ -543,98 +543,98 @@ public class SwarmTest
         {
             unreachable = e;
         };
-        swarm.StartAsync().Wait();
+        await swarm.StartAsync();
         try
         {
-            ExceptionAssert.Throws<Exception>(() =>
+            ExceptionAssert.Throws<Exception>(async () =>
             {
-                var _ = swarm.ConnectAsync(remoteAddress).Result;
+                var _ = await swarm.ConnectAsync(remoteAddress);
             });
         }
         finally
         {
-            swarm.StopAsync().Wait();
+            await swarm.StopAsync();
         }
         Assert.IsNotNull(unreachable);
         Assert.AreEqual(remoteId, unreachable.Id.ToBase58());
     }
 
     [TestMethod]
-    public void Connect_Not_Peer()
+    public async Task Connect_Not_Peer()
     {
         var remoteId = "QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb";
         MultiAddress remoteAddress = $"/dns/npmjs.com/tcp/80/ipfs/{remoteId}";
         var swarm = new Swarm { LocalPeer = _self };
-        swarm.StartAsync().Wait();
+        await swarm.StartAsync();
         try
         {
-            ExceptionAssert.Throws<Exception>(() =>
+            ExceptionAssert.Throws<Exception>(async () =>
             {
-                var _ = swarm.ConnectAsync(remoteAddress).Result;
+                var _ = await swarm.ConnectAsync(remoteAddress);
             });
         }
         finally
         {
-            swarm.StopAsync().Wait();
+            await swarm.StopAsync();
         }
     }
 
     [TestMethod]
-    public void Connect_Cancelled()
+    public async Task Connect_Cancelled()
     {
         var cs = new CancellationTokenSource();
         cs.Cancel();
         var remoteId = "QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb";
         MultiAddress remoteAddress = $"/ip4/127.0.0.1/tcp/4002/ipfs/{remoteId}";
         var swarm = new Swarm { LocalPeer = _self };
-        swarm.StartAsync().Wait(cs.Token);
+        await swarm.StartAsync();
         try
         {
-            ExceptionAssert.Throws<Exception>(() =>
+            ExceptionAssert.Throws<Exception>(async () =>
             {
-                var _ = swarm.ConnectAsync(remoteAddress, cs.Token).Result;
+                var _ = await swarm.ConnectAsync(remoteAddress, cs.Token);
             });
         }
         finally
         {
-            swarm.StopAsync().Wait(cs.Token);
+            await swarm.StopAsync();
         }
     }
 
     [TestMethod]
-    public void Connecting_To_Blacklisted_Address()
+    public async Task Connecting_To_Blacklisted_Address()
     {
         var swarm = new Swarm { LocalPeer = _self };
         swarm.BlackList.Add(_mars);
-        swarm.StartAsync().Wait();
+        await swarm.StartAsync();
         try
         {
-            ExceptionAssert.Throws<Exception>(() =>
+            ExceptionAssert.Throws<Exception>(async () =>
             {
-                var _ = swarm.ConnectAsync(_mars).Result;
+                var _ = await swarm.ConnectAsync(_mars);
             });
         }
         finally
         {
-            swarm.StopAsync().Wait();
+            await swarm.StopAsync();
         }
     }
 
     [TestMethod]
-    public void Connecting_To_Self()
+    public async Task Connecting_To_Self()
     {
         var swarm = new Swarm { LocalPeer = _self };
-        swarm.StartAsync().Wait();
+        await swarm.StartAsync();
         try
         {
-            ExceptionAssert.Throws<Exception>(() =>
+            ExceptionAssert.Throws<Exception>(async () =>
             {
-                var _ = swarm.ConnectAsync(_earth).Result;
+                var _ = await swarm.ConnectAsync(_earth);
             });
         }
         finally
         {
-            swarm.StopAsync().Wait();
+            await swarm.StopAsync();
         }
     }
 
@@ -648,9 +648,9 @@ public class SwarmTest
             var listen = await swarm.StartListeningAsync("/ip4/127.0.0.1/tcp/0");
             var bad = listen.Clone();
             bad.Protocols[2].Value = "QmXFX2P5ammdmXQgfqGkfswtEVFsZUJ5KeHRXQYCTdiTAb";
-            ExceptionAssert.Throws<Exception>(() =>
+            ExceptionAssert.Throws<Exception>(async () =>
             {
-                swarm.ConnectAsync(bad).Wait();
+                await swarm.ConnectAsync(bad);
             });
         }
         finally
@@ -960,9 +960,9 @@ public class SwarmTest
             AgentVersion = _self.AgentVersion
         };
         var swarm = new Swarm { LocalPeer = peer };
-        ExceptionAssert.Throws<ArgumentException>(() =>
+        ExceptionAssert.Throws<ArgumentException>(async () =>
         {
-            var _ = swarm.StartListeningAsync("/ip4/127.0.0.1").Result;
+            var _ = await swarm.StartListeningAsync("/ip4/127.0.0.1");
         });
         Assert.AreEqual(0, peer.Addresses.Count());
     }
@@ -1008,7 +1008,7 @@ public class SwarmTest
         {
             ExceptionAssert.Throws<Exception>(() =>
             {
-                swarm.DialAsync(peer, "/foo/0.42.0").Wait();
+                swarm.DialAsync(peer, "/foo/0.42.0").GetAwaiter().GetResult();
             });
         }
         finally
@@ -1036,7 +1036,7 @@ public class SwarmTest
         {
             ExceptionAssert.Throws<Exception>(() =>
             {
-                swarm.DialAsync(peer, "/foo/0.42.0").Wait();
+                swarm.DialAsync(peer, "/foo/0.42.0").GetAwaiter().GetResult();
             });
         }
         finally
@@ -1063,7 +1063,7 @@ public class SwarmTest
         {
             ExceptionAssert.Throws<Exception>(() =>
             {
-                swarm.DialAsync(peerB, "/foo/0.42.0").Wait();
+                swarm.DialAsync(peerB, "/foo/0.42.0").GetAwaiter().GetResult();
             });
         }
         finally

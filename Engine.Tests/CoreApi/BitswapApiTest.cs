@@ -403,7 +403,7 @@ public class BitswapApiTest
             var cts = new CancellationTokenSource(300);
             ExceptionAssert.Throws<TaskCanceledException>(() =>
             {
-                var _ = _ipfs.Bitswap.GetAsync(block.Id, cts.Token).Result;
+                var _ = _ipfs.Bitswap.GetAsync(block.Id, cts.Token).GetAwaiter().GetResult();
             });
 
             Assert.AreEqual(0, (await _ipfs.Bitswap.WantsAsync(cancel: cts.Token)).Count());

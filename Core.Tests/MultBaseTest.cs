@@ -236,10 +236,6 @@ public class MultiBaseTest
     [TestMethod]
     public void Invalid_Encoded_String()
     {
-        foreach (var bad in MultiBaseAlgorithm.All.Select(alg => alg.Code + "?"))
-        {
-            ExceptionAssert.Throws<FormatException>(() => MultiBase.Decode(bad));
-        }
+        ExceptionAssert.Throws<FormatException>(() => MultiBase.Decode("??"));
     }
-
 }

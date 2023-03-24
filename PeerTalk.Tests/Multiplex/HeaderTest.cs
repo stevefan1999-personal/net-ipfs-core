@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using IpfsShipyard.PeerTalk.Multiplex;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,23 +9,23 @@ namespace IpfsShipyard.PeerTalk.Tests.Multiplex;
 public class HeaderTest
 {
     [TestMethod]
-    public void StreamIds()
+    public async Task StreamIds()
     {
-        Roundtrip(0, PacketType.NewStream);
-        Roundtrip(1, PacketType.NewStream);
-        Roundtrip(0x1234, PacketType.NewStream);
-        Roundtrip(0x12345678, PacketType.NewStream);
-        Roundtrip(Header.MinStreamId, PacketType.NewStream);
-        Roundtrip(Header.MaxStreamId, PacketType.NewStream);
+        await RoundtripAsync(0, PacketType.NewStream);
+        await RoundtripAsync(1, PacketType.NewStream);
+        await RoundtripAsync(0x1234, PacketType.NewStream);
+        await RoundtripAsync(0x12345678, PacketType.NewStream);
+        await RoundtripAsync(Header.MinStreamId, PacketType.NewStream);
+        await RoundtripAsync(Header.MaxStreamId, PacketType.NewStream);
     }
 
-    private void Roundtrip(long id, PacketType type)
+    private async Task RoundtripAsync(long id, PacketType type)
     {
         var header1 = new Header { StreamId = id, PacketType = type };
         var ms = new MemoryStream();
-        header1.WriteAsync(ms).Wait();
+        await header1.WriteAsync(ms);
         ms.Position = 0;
-        var header2 = Header.ReadAsync(ms).Result;
+        var header2 = await Header.ReadAsync(ms);
         Assert.AreEqual(header1.StreamId, header2.StreamId);
         Assert.AreEqual(header1.PacketType, header2.PacketType);
     }

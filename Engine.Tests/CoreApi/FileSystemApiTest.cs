@@ -146,14 +146,14 @@ public class FileSystemApiTest
     }
 
     [TestMethod]
-    public void AddFile()
+    public async void AddFile()
     {
         var path = Path.GetTempFileName();
         File.WriteAllText(path, "hello world");
         try
         {
             var ipfs = TestFixture.Ipfs;
-            var node = (FileSystemNode)ipfs.FileSystem.AddFileAsync(path).Result;
+            var node = (FileSystemNode)await ipfs.FileSystem.AddFileAsync(path);
             Assert.AreEqual("Qmf412jQZiuVUtdgnB36FXFX7xg5V6KEbSJ4dpQuhkLyfD", (string)node.Id);
             Assert.AreEqual(0, node.Links.Count());
             Assert.AreEqual(Path.GetFileName(path), node.Name);
@@ -165,7 +165,7 @@ public class FileSystemApiTest
     }
 
     [TestMethod]
-    public void AddFile_CidEncoding()
+    public async Task AddFile_CidEncoding()
     {
         var path = Path.GetTempFileName();
         File.WriteAllText(path, "hello world");
@@ -176,12 +176,12 @@ public class FileSystemApiTest
             {
                 Encoding = "base32"
             };
-            var node = ipfs.FileSystem.AddFileAsync(path, options).Result;
+            var node = await ipfs.FileSystem.AddFileAsync(path, options);
             Assert.AreEqual("base32", node.Id.Encoding);
             Assert.AreEqual(1, node.Id.Version);
             Assert.AreEqual(0, node.Links.Count());
 
-            var text = ipfs.FileSystem.ReadAllTextAsync(node.Id).Result;
+            var text = await ipfs.FileSystem.ReadAllTextAsync(node.Id);
             Assert.AreEqual("hello world", text);
         }
         finally
@@ -191,7 +191,7 @@ public class FileSystemApiTest
     }
 
     [TestMethod]
-    public void AddFile_Large()
+    public async Task AddFile_Large()
     {
         AddFile(); // warm up
 
@@ -199,7 +199,7 @@ public class FileSystemApiTest
         var ipfs = TestFixture.Ipfs;
         var stopWatch = new Stopwatch();
         stopWatch.Start();
-        var node = ipfs.FileSystem.AddFileAsync(path).Result;
+        var node = await ipfs.FileSystem.AddFileAsync(path);
         stopWatch.Stop();
         Console.WriteLine("Add file took {0} seconds.", stopWatch.Elapsed.TotalSeconds);
 
@@ -209,8 +209,8 @@ public class FileSystemApiTest
         var buffer1 = new byte[k];
         var buffer2 = new byte[k];
         stopWatch.Restart();
-        using var localStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-        using var ipfsStream = ipfs.FileSystem.ReadFileAsync(node.Id).Result;
+        await using var localStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+        await using var ipfsStream = await ipfs.FileSystem.ReadFileAsync(node.Id);
         while (true)
         {
             var n1 = localStream.Read(buffer1, 0, k);
@@ -237,7 +237,7 @@ public class FileSystemApiTest
 
     /// <seealso href="https://github.com/richardschneider/net-ipfs-engine/issues/125" />
     [TestMethod]
-    public void AddFile_Larger()
+    public async Task AddFile_Larger()
     {
         AddFile(); // warm up
 
@@ -245,7 +245,7 @@ public class FileSystemApiTest
         var ipfs = TestFixture.Ipfs;
         var stopWatch = new Stopwatch();
         stopWatch.Start();
-        var node = ipfs.FileSystem.AddFileAsync(path).Result;
+        var node = await ipfs.FileSystem.AddFileAsync(path);
         stopWatch.Stop();
         Console.WriteLine("Add file took {0} seconds.", stopWatch.Elapsed.TotalSeconds);
 
@@ -256,7 +256,7 @@ public class FileSystemApiTest
         var buffer2 = new byte[k];
         stopWatch.Restart();
         using var localStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-        using var ipfsStream = ipfs.FileSystem.ReadFileAsync(node.Id).Result;
+        using var ipfsStream = await ipfs.FileSystem.ReadFileAsync(node.Id);
         while (true)
         {
             var n1 = localStream.Read(buffer1, 0, k);
@@ -569,7 +569,7 @@ public class FileSystemApiTest
             await ipfs.Key.RemoveAsync(key.Name);
             ExceptionAssert.Throws<KeyNotFoundException>(() =>
             {
-                var _ = ipfs.FileSystem.ReadAllTextAsync(node.Id).Result;
+                var _ = ipfs.FileSystem.ReadAllTextAsync(node.Id).GetAwaiter().GetResult();
             });
         }
         finally
@@ -612,13 +612,13 @@ public class FileSystemApiTest
     }
 
     [TestMethod]
-    public void AddDirectory()
+    public async Task AddDirectory()
     {
         var ipfs = TestFixture.Ipfs;
         var temp = MakeTemp();
         try
         {
-            var dir = ipfs.FileSystem.AddDirectoryAsync(temp, false).Result;
+            var dir = await ipfs.FileSystem.AddDirectoryAsync(temp, false);
             Assert.IsTrue(dir.IsDirectory);
 
             var files = dir.Links.ToArray();
@@ -626,11 +626,11 @@ public class FileSystemApiTest
             Assert.AreEqual("alpha.txt", files[0].Name);
             Assert.AreEqual("beta.txt", files[1].Name);
 
-            Assert.AreEqual("alpha", ipfs.FileSystem.ReadAllTextAsync(files[0].Id).Result);
-            Assert.AreEqual("beta", ipfs.FileSystem.ReadAllTextAsync(files[1].Id).Result);
+            Assert.AreEqual("alpha", await ipfs.FileSystem.ReadAllTextAsync(files[0].Id));
+            Assert.AreEqual("beta", await ipfs.FileSystem.ReadAllTextAsync(files[1].Id));
 
-            Assert.AreEqual("alpha", ipfs.FileSystem.ReadAllTextAsync(dir.Id + "/alpha.txt").Result);
-            Assert.AreEqual("beta", ipfs.FileSystem.ReadAllTextAsync(dir.Id + "/beta.txt").Result);
+            Assert.AreEqual("alpha", await ipfs.FileSystem.ReadAllTextAsync(dir.Id + "/alpha.txt"));
+            Assert.AreEqual("beta", await ipfs.FileSystem.ReadAllTextAsync(dir.Id + "/beta.txt"));
         }
         finally
         {
@@ -639,13 +639,13 @@ public class FileSystemApiTest
     }
 
     [TestMethod]
-    public void AddDirectoryRecursive()
+    public async Task AddDirectoryRecursive()
     {
         var ipfs = TestFixture.Ipfs;
         var temp = MakeTemp();
         try
         {
-            var dir = ipfs.FileSystem.AddDirectoryAsync(temp).Result;
+            var dir = await ipfs.FileSystem.AddDirectoryAsync(temp);
             Assert.IsTrue(dir.IsDirectory);
 
             var files = dir.Links.ToArray();
@@ -656,23 +656,23 @@ public class FileSystemApiTest
             Assert.AreNotEqual(0, files[0].Size);
             Assert.AreNotEqual(0, files[1].Size);
 
-            var rootFiles = ipfs.FileSystem.ListFileAsync(dir.Id).Result.Links.ToArray();
+            var rootFiles = (await ipfs.FileSystem.ListFileAsync(dir.Id)).Links.ToArray();
             Assert.AreEqual(3, rootFiles.Length);
             Assert.AreEqual("alpha.txt", rootFiles[0].Name);
             Assert.AreEqual("beta.txt", rootFiles[1].Name);
             Assert.AreEqual("x", rootFiles[2].Name);
 
-            var xfiles = ipfs.FileSystem.ListFileAsync(rootFiles[2].Id).Result.Links.ToArray();
+            var xfiles = (await ipfs.FileSystem.ListFileAsync(rootFiles[2].Id)).Links.ToArray();
             Assert.AreEqual(2, xfiles.Length);
             Assert.AreEqual("x.txt", xfiles[0].Name);
             Assert.AreEqual("y", xfiles[1].Name);
 
-            var yfiles = ipfs.FileSystem.ListFileAsync(xfiles[1].Id).Result.Links.ToArray();
+            var yfiles = (await ipfs.FileSystem.ListFileAsync(xfiles[1].Id)).Links.ToArray();
             Assert.AreEqual(1, yfiles.Length);
             Assert.AreEqual("y.txt", yfiles[0].Name);
 
-            Assert.AreEqual("x", ipfs.FileSystem.ReadAllTextAsync(dir.Id + "/x/x.txt").Result);
-            Assert.AreEqual("y", ipfs.FileSystem.ReadAllTextAsync(dir.Id + "/x/y/y.txt").Result);
+            Assert.AreEqual("x", await ipfs.FileSystem.ReadAllTextAsync(dir.Id + "/x/x.txt"));
+            Assert.AreEqual("y", await ipfs.FileSystem.ReadAllTextAsync(dir.Id + "/x/y/y.txt"));
         }
         finally
         {
@@ -681,7 +681,7 @@ public class FileSystemApiTest
     }
 
     [TestMethod]
-    public void AddDirectory_WithHashAlgorithm()
+    public async Task AddDirectory_WithHashAlgorithm()
     {
         var ipfs = TestFixture.Ipfs;
         var alg = "keccak-512";
@@ -689,7 +689,7 @@ public class FileSystemApiTest
         var temp = MakeTemp();
         try
         {
-            var dir = ipfs.FileSystem.AddDirectoryAsync(temp, false, options).Result;
+            var dir = await ipfs.FileSystem.AddDirectoryAsync(temp, false, options);
             Assert.IsTrue(dir.IsDirectory);
             Assert.AreEqual(alg, dir.Id.Hash.Algorithm.Name);
 
@@ -705,7 +705,7 @@ public class FileSystemApiTest
     }
 
     [TestMethod]
-    public void AddDirectory_WithCidEncoding()
+    public async Task AddDirectory_WithCidEncoding()
     {
         var ipfs = TestFixture.Ipfs;
         var encoding = "base32z";
@@ -713,7 +713,7 @@ public class FileSystemApiTest
         var temp = MakeTemp();
         try
         {
-            var dir = ipfs.FileSystem.AddDirectoryAsync(temp, false, options).Result;
+            var dir = await ipfs.FileSystem.AddDirectoryAsync(temp, false, options);
             Assert.IsTrue(dir.IsDirectory);
             Assert.AreEqual(encoding, dir.Id.Encoding);
 
@@ -835,7 +835,7 @@ public class FileSystemApiTest
         var temp = MakeTemp();
         try
         {
-            var dir = ipfs.FileSystem.AddDirectoryAsync(temp).Result;
+            var dir = await ipfs.FileSystem.AddDirectoryAsync(temp);
             var dirid = dir.Id.Encode();
 
             var tar = await ipfs.FileSystem.GetAsync(dir.Id);
@@ -869,7 +869,7 @@ public class FileSystemApiTest
             {
                 RawLeaves = true
             };
-            var dir = ipfs.FileSystem.AddDirectoryAsync(temp, true, options).Result;
+            var dir = await ipfs.FileSystem.AddDirectoryAsync(temp, true, options);
             var dirid = dir.Id.Encode();
 
             var tar = await ipfs.FileSystem.GetAsync(dir.Id);
@@ -900,7 +900,7 @@ public class FileSystemApiTest
         Directory.CreateDirectory(temp);
         try
         {
-            var dir = ipfs.FileSystem.AddDirectoryAsync(temp).Result;
+            var dir = await ipfs.FileSystem.AddDirectoryAsync(temp);
             var dirid = dir.Id.Encode();
 
             var tar = await ipfs.FileSystem.GetAsync(dir.Id);

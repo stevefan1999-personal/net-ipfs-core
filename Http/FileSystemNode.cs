@@ -30,7 +30,7 @@ public class FileSystemNode : IFileSystemNode
     }
 
     /// <inheritdoc />
-    public Stream DataStream => IpfsClient?.FileSystem.ReadFileAsync(Id).Result;
+    public Stream DataStream => IpfsClient?.FileSystem.ReadFileAsync(Id).GetAwaiter().GetResult();
 
     /// <inheritdoc />
     [DataMember]
@@ -126,10 +126,9 @@ public class FileSystemNode : IFileSystemNode
 
     private void GetInfo()
     {
-        var node = IpfsClient.FileSystem.ListFileAsync(Id).Result;
+        var node = IpfsClient.FileSystem.ListFileAsync(Id).GetAwaiter().GetResult();
         IsDirectory = node.IsDirectory;
         Links = node.Links;
         Size = node.Size;
     }
-
 }

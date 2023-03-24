@@ -19,11 +19,11 @@ public class RandomWalkTest
     }
 
     [TestMethod]
-    public void CannotStartTwice()
+    public async Task CannotStartTwice()
     {
         var walk = new RandomWalk();
-        walk.StartAsync().Wait();
-        ExceptionAssert.Throws<Exception>(() => { walk.StartAsync().Wait(); });
+        await walk.StartAsync();
+        ExceptionAssert.Throws<Exception>(() => walk.StartAsync().GetAwaiter().GetResult());
     }
 
     [TestMethod]

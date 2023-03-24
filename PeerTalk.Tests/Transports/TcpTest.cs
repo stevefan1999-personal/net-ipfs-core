@@ -18,9 +18,9 @@ public class TcpTest
     public void Connect_Unknown_Port()
     {
         var tcp = new Tcp();
-        ExceptionAssert.Throws<SocketException>(() =>
+        ExceptionAssert.Throws<SocketException>(async () =>
         {
-            var _ = tcp.ConnectAsync("/ip4/127.0.0.1/tcp/32700").Result;
+            var _ = await tcp.ConnectAsync("/ip4/127.0.0.1/tcp/32700");
         });
     }
 
@@ -28,13 +28,13 @@ public class TcpTest
     public void Connect_Missing_TCP_Port()
     {
         var tcp = new Tcp();
-        ExceptionAssert.Throws<Exception>(() =>
+        ExceptionAssert.Throws<Exception>(async () =>
         {
-            var _ = tcp.ConnectAsync("/ip4/127.0.0.1/udp/32700").Result;
+            var _ = await tcp.ConnectAsync("/ip4/127.0.0.1/udp/32700");
         });
-        ExceptionAssert.Throws<Exception>(() =>
+        ExceptionAssert.Throws<Exception>(async () =>
         {
-            var _ = tcp.ConnectAsync("/ip4/127.0.0.1").Result;
+            var _ = await tcp.ConnectAsync("/ip4/127.0.0.1");
         });
     }
 
@@ -42,9 +42,9 @@ public class TcpTest
     public void Connect_Missing_IP_Address()
     {
         var tcp = new Tcp();
-        ExceptionAssert.Throws<Exception>(() =>
+        ExceptionAssert.Throws<Exception>(async () =>
         {
-            var _ = tcp.ConnectAsync("/tcp/32700").Result;
+            var _ = await tcp.ConnectAsync("/tcp/32700");
         });
     }
 
@@ -52,9 +52,9 @@ public class TcpTest
     public void Connect_Unknown_Address()
     {
         var tcp = new Tcp();
-        ExceptionAssert.Throws<SocketException>(() =>
+        ExceptionAssert.Throws<SocketException>(async () =>
         {
-            var _ = tcp.ConnectAsync("/ip4/127.0.10.10/tcp/32700").Result;
+            var _ = await tcp.ConnectAsync("/ip4/127.0.10.10/tcp/32700");
         });
     }
 
@@ -64,9 +64,9 @@ public class TcpTest
         var tcp = new Tcp();
         var cs = new CancellationTokenSource();
         cs.Cancel();
-        ExceptionAssert.Throws<OperationCanceledException>(() =>
+        ExceptionAssert.Throws<OperationCanceledException>(async () =>
         {
-            var stream = tcp.ConnectAsync("/ip4/127.0.10.10/tcp/32700", cs.Token).Result;
+            var stream = await tcp.ConnectAsync("/ip4/127.0.10.10/tcp/32700", cs.Token);
         });
     }
 

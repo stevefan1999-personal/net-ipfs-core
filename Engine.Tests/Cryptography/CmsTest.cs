@@ -76,7 +76,7 @@ nHILFmhac/+a/StQOKuf9dx5qXeGvt9LnwKuGGSfNX4g+dTkoa6N
 ");
         ExceptionAssert.Throws<KeyNotFoundException>(() =>
         {
-            var plain = keychain.ReadProtectedDataAsync(cipher).Result;
+            var plain = keychain.ReadProtectedDataAsync(cipher).GetAwaiter().GetResult();
         });
     }
 

@@ -9,10 +9,10 @@ namespace IpfsShipyard.Ipfs.Http.Tests.CoreApi;
 public class GenericApiTest
 {
     [TestMethod]
-    public void Local_Node_Info()
+    public async Task Local_Node_Info()
     {
         var ipfs = TestFixture.Ipfs;
-        var node = ipfs.IdAsync().Result;
+        var node = await ipfs.IdAsync();
         Assert.IsInstanceOfType(node, typeof(Peer));
     }
 
@@ -25,20 +25,20 @@ public class GenericApiTest
     }
 
     [TestMethod]
-    public void Version_Info()
+    public async Task Version_Info()
     {
         var ipfs = TestFixture.Ipfs;
-        var versions = ipfs.VersionAsync().Result;
+        var versions = await ipfs.VersionAsync();
         Assert.IsNotNull(versions);
         Assert.IsTrue(versions.ContainsKey("Version"));
         Assert.IsTrue(versions.ContainsKey("Repo"));
     }
 
     [TestMethod]
-    public void Resolve()
+    public async Task Resolve()
     {
         var ipfs = TestFixture.Ipfs;
-        var path = ipfs.ResolveAsync("QmYNQJoKGNHTpPxCBPh9KkDpaExgd2duMa3aF6ytMpHdao").Result;
+        var path = await ipfs.ResolveAsync("QmYNQJoKGNHTpPxCBPh9KkDpaExgd2duMa3aF6ytMpHdao");
         Assert.AreEqual("/ipfs/QmYNQJoKGNHTpPxCBPh9KkDpaExgd2duMa3aF6ytMpHdao", path);
     }
 

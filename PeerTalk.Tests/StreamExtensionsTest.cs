@@ -26,9 +26,9 @@ public class StreamExtensionsTest
 
         using (var ms = new MemoryStream(expected))
         {
-            ExceptionAssert.Throws<EndOfStreamException>(() =>
+            ExceptionAssert.Throws<EndOfStreamException>(async () =>
             {
-                ms.ReadExactAsync(actual, 0, actual.Length).Wait();
+                await ms.ReadExactAsync(actual, 0, actual.Length);
             });
         }
 
@@ -39,7 +39,7 @@ public class StreamExtensionsTest
             {
                 // This is valid because we are not testing the cancellation itself
                 // ReSharper disable once MethodSupportsCancellation
-                ms.ReadExactAsync(actual, 0, actual.Length, cancel.Token).Wait();
+                ms.ReadExactAsync(actual, 0, actual.Length, cancel.Token).GetAwaiter().GetResult();
             });
         }
     }
@@ -59,11 +59,11 @@ public class StreamExtensionsTest
         cancel.Cancel();
         using (var ms = new MemoryStream(expected))
         {
-            ExceptionAssert.Throws<TaskCanceledException>(() =>
+            ExceptionAssert.Throws<TaskCanceledException>(async () =>
             {
                 // This is valid because we are not testing the cancellation itself
                 // ReSharper disable once MethodSupportsCancellation
-                ms.ReadExactAsync(actual, 0, actual.Length, cancel.Token).Wait();
+                await ms.ReadExactAsync(actual, 0, actual.Length, cancel.Token);
             });
         }
     }

@@ -22,7 +22,7 @@ internal class TempNode : IpfsEngine
         Config.SetAsync(
             "Addresses.Swarm",
             JToken.FromObject(new[] { "/ip4/0.0.0.0/tcp/0" })
-        ).Wait();
+        ).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc />

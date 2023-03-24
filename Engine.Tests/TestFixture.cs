@@ -20,14 +20,14 @@ public class TestFixture
         Ipfs.Config.SetAsync(
             "Addresses.Swarm",
             JToken.FromObject(new[] { "/ip4/0.0.0.0/tcp/0" })
-        ).Wait();
+        ).GetAwaiter().GetResult();
 
         IpfsOther.Options.Repository.Folder = Path.Combine(Path.GetTempPath(), "ipfs-other");
         IpfsOther.Options.KeyChain.DefaultKeySize = 512;
         IpfsOther.Config.SetAsync(
             "Addresses.Swarm",
             JToken.FromObject(new[] { "/ip4/0.0.0.0/tcp/0" })
-        ).Wait();
+        ).GetAwaiter().GetResult();
     }
 
     [TestMethod]

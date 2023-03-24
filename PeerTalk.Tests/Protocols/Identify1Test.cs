@@ -81,9 +81,9 @@ public class Identitfy1Test
 
         // Process identify msg.
         ms.Position = 0;
-        ExceptionAssert.Throws<InvalidDataException>(() =>
+        ExceptionAssert.Throws<InvalidDataException>(async () =>
         {
-            identify.UpdateRemotePeerAsync(peerB, ms, CancellationToken.None).Wait();
+            await identify.UpdateRemotePeerAsync(peerB, ms, CancellationToken.None);
         });
     }
 
@@ -119,9 +119,9 @@ public class Identitfy1Test
 
         // Process identify msg.
         ms.Position = 0;
-        ExceptionAssert.Throws<InvalidDataException>(() =>
+        ExceptionAssert.Throws<InvalidDataException>(async () =>
         {
-            identify.UpdateRemotePeerAsync(peerB, ms, CancellationToken.None).Wait();
+            await identify.UpdateRemotePeerAsync(peerB, ms, CancellationToken.None);
         });
     }
 }

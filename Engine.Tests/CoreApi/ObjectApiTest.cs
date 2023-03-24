@@ -34,7 +34,7 @@ public class ObjectApiTest
     {
         ExceptionAssert.Throws<Exception>(() =>
         {
-            var node = _ipfs.Object.NewAsync("unknown-template").Result;
+            var node = _ipfs.Object.NewAsync("unknown-template").GetAwaiter().GetResult();
         });
     }
 

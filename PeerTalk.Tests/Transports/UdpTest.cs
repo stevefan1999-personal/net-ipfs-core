@@ -18,13 +18,13 @@ public class UdpTest
     public void Connect_Missing_UDP_Port()
     {
         var udp = new Udp();
-        ExceptionAssert.Throws<Exception>(() =>
+        ExceptionAssert.Throws<Exception>(async () =>
         {
-            var _ = udp.ConnectAsync("/ip4/127.0.0.1/tcp/32700").Result;
+            var _ = await udp.ConnectAsync("/ip4/127.0.0.1/tcp/32700");
         });
-        ExceptionAssert.Throws<Exception>(() =>
+        ExceptionAssert.Throws<Exception>(async () =>
         {
-            var _ = udp.ConnectAsync("/ip4/127.0.0.1").Result;
+            var _ = await udp.ConnectAsync("/ip4/127.0.0.1");
         });
     }
 
@@ -32,9 +32,9 @@ public class UdpTest
     public void Connect_Missing_IP_Address()
     {
         var udp = new Udp();
-        ExceptionAssert.Throws<Exception>(() =>
+        ExceptionAssert.Throws<Exception>(async () =>
         {
-            var _ = udp.ConnectAsync("/udp/32700").Result;
+            var _ = await udp.ConnectAsync("/udp/32700");
         });
     }
 
@@ -44,9 +44,9 @@ public class UdpTest
         var udp = new Udp();
         var cs = new CancellationTokenSource();
         cs.Cancel();
-        ExceptionAssert.Throws<OperationCanceledException>(() =>
+        ExceptionAssert.Throws<OperationCanceledException>(async () =>
         {
-            var stream = udp.ConnectAsync("/ip4/127.0.10.10/udp/32700", cs.Token).Result;
+            var stream = await udp.ConnectAsync("/ip4/127.0.10.10/udp/32700", cs.Token);
         });
     }
 

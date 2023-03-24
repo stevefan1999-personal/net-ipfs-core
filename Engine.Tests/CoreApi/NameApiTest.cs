@@ -40,7 +40,7 @@ public class NameApiTest
     {
         ExceptionAssert.Throws<Exception>(() =>
         {
-            var _ = _ipfs.Dns.ResolveAsync("google.com").Result;
+            var _ = _ipfs.Dns.ResolveAsync("google.com").GetAwaiter().GetResult();
         });
     }
 }

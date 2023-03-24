@@ -70,7 +70,7 @@ public class FileStoreTest
 
         ExceptionAssert.Throws<KeyNotFoundException>(() =>
         {
-            var _ = Store.GetAsync(42).Result;
+            var _ = Store.GetAsync(42).GetAwaiter().GetResult();
         });
     }
 
@@ -154,14 +154,14 @@ public class FileStoreTest
     }
 
     [TestMethod]
-    public void PutWithException()
+    public async Task PutWithException()
     {
         Task BadSerialize(Stream stream, int name, Entity value, CancellationToken cancel) => throw new("no serializer");
         var store = Store;
         store.Serialize = BadSerialize;
 
-        ExceptionAssert.Throws<Exception>(() => store.PutAsync(_a.Number, _a).Wait());
-        Assert.IsFalse(store.ExistsAsync(_a.Number).Result);
+        ExceptionAssert.Throws<Exception>(() => store.PutAsync(_a.Number, _a).GetAwaiter().GetResult());
+        Assert.IsFalse(await store.ExistsAsync(_a.Number));
     }
 
     private class Entity

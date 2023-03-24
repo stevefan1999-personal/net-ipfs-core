@@ -29,11 +29,11 @@ public class Program
         try
         {
             IpfsEngine = new(Passphrase);
-            IpfsEngine.StartAsync().Wait();
+            IpfsEngine.StartAsync().GetAwaiter().GetResult();
 
             BuildWebHost(args)
                 .RunAsync(Cancel.Token)
-                .Wait();
+                .GetAwaiter().GetResult();
         }
         catch (TaskCanceledException)
         {
@@ -44,13 +44,13 @@ public class Program
             Console.WriteLine(e.Message); // TODO: better error handling
         }
 
-        IpfsEngine?.StopAsync().Wait();
+        IpfsEngine?.StopAsync().GetAwaiter().GetResult();
     }
 
     private static IWebHost BuildWebHost(string[] args)
     {
         var urls = "http://127.0.0.1:5009";
-        var addr = (string)IpfsEngine.Config.GetAsync("Addresses.API").Result;
+        var addr = (string)IpfsEngine.Config.GetAsync("Addresses.API").GetAwaiter().GetResult();
         if (addr != null)
         {
             // Quick and dirty: multiaddress to URL

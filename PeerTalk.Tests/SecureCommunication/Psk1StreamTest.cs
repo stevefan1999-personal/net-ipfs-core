@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using IpfsShipyard.PeerTalk.Cryptography;
 using IpfsShipyard.PeerTalk.SecureCommunication;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,7 +19,7 @@ public class Psk1StreamTest
     }
 
     [TestMethod]
-    public void FirstWriteSendsNonce()
+    public async Task FirstWriteSendsNonce()
     {
         var psk = new PreSharedKey().Generate();
 
@@ -34,12 +35,12 @@ public class Psk1StreamTest
 
         insecure = new();
         secure = new(insecure, psk);
-        secure.WriteAsync(new byte[12], 0, 12).Wait();
+        await secure.WriteAsync(new byte[12], 0, 12);
         Assert.AreEqual(24 + 12, insecure.Length);
     }
 
     [TestMethod]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var psk = new PreSharedKey().Generate();
         var plain = new byte[] { 1, 2, 3 };
@@ -58,7 +59,7 @@ public class Psk1StreamTest
 
         insecure.Position = 0;
         secure = new(insecure, psk);
-        secure.ReadAsync(plain2, 0, plain2.Length).Wait();
+        await secure.ReadAsync(plain2, 0, plain2.Length);
         CollectionAssert.AreEqual(plain, plain2);
     }
 

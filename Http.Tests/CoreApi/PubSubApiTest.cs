@@ -28,7 +28,7 @@ public class PubSubApiTest
         try
         {
             await ipfs.PubSub.SubscribeAsync(topic, _ => { }, cs.Token);
-            var peers = ipfs.PubSub.PeersAsync(cancel: cs.Token).Result.ToArray();
+            var peers = (await ipfs.PubSub.PeersAsync(cancel: cs.Token)).ToArray();
             Assert.IsTrue(peers.Length > 0);
         }
         finally
@@ -38,11 +38,11 @@ public class PubSubApiTest
     }
 
     [TestMethod]
-    public void Peers_Unknown_Topic()
+    public async Task Peers_Unknown_Topic()
     {
         var ipfs = TestFixture.Ipfs;
         var topic = "net-ipfs-http-client-test-unknown" + Guid.NewGuid();
-        var peers = ipfs.PubSub.PeersAsync(topic).Result.ToArray();
+        var peers = (await ipfs.PubSub.PeersAsync(topic)).ToArray();
         Assert.AreEqual(0, peers.Length);
     }
 
@@ -55,7 +55,7 @@ public class PubSubApiTest
         try
         {
             await ipfs.PubSub.SubscribeAsync(topic, _ => { }, cs.Token);
-            var topics = ipfs.PubSub.SubscribedTopicsAsync(cs.Token).Result.ToArray();
+            var topics = (await ipfs.PubSub.SubscribedTopicsAsync(cs.Token)).ToArray();
             Assert.IsTrue(topics.Length > 0);
             CollectionAssert.Contains(topics, topic);
         }
